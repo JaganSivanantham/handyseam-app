@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Customer</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="brand">HandySeam</div>
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="menu-item">Dashboard</a>
+        <a href="/orders/create" class="menu-item active">Create New Order</a>
+        <a href="/customers" class="menu-item">Customers</a>
+    </div>
+</nav>
+
+<header class="topbar"><div class="page-title">Select Customer</div></header>
+
+<main class="main-content">
+    <div class="card" style="margin-bottom: 20px;">
+        <form action="/orders/create/tailoring/select-customer" method="GET" style="display: flex; gap: 10px; width: 100%;">
+            <a href="/orders/create" class="btn-secondary">Back</a>
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by Customer Name or Phone..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <button type="submit" class="btn-primary">SEARCH</button>
+            <a href="/customers" class="btn-primary" style="background-color: #28a745;">CREATE NEW CUSTOMER</a>
+        </form>
+    </div>
+
+    <div class="card">
+        <table class="data-table">
+            <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Action</th></tr></thead>
+            <tbody>
+            <tr th:each="customer : ${listCustomers}">
+                <td th:text="${customer.id}"></td>
+                <td th:text="${customer.name}"></td>
+                <td th:text="${customer.phone}"></td>
+                <td>
+                    <a th:href="@{/orders/create/tailoring/details(customerId=${customer.id})}" class="btn-primary" style="padding: 5px 15px; font-size: 12px;">SELECT</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

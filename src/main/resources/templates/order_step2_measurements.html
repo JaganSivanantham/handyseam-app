@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Measurements</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .measurement-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .header-bar { background: #2c2440; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* VOICE AI STYLES */
+        .mic-btn {
+            background-color: white; color: #2c2440; border: none;
+            padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .mic-btn:hover { background-color: #f0f0f0; }
+        .mic-active { background-color: #ff4444 !important; color: white !important; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="brand">HandySeam</div>
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="menu-item">Dashboard</a>
+        <a href="/orders/create" class="menu-item active">Create New Order</a>
+        <a href="/orders" class="menu-item">View Orders</a>
+        <a href="/customers" class="menu-item">Customers</a>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="card">
+        <div class="header-bar">
+            <h3>Measurement Details For <span th:text="${currentOrder.customer.name}"></span></h3>
+
+            <button type="button" class="mic-btn" onclick="toggleVoiceAI()" id="micBtn">
+                <i class="fas fa-microphone"></i> <span>Start Voice Entry</span>
+            </button>
+        </div>
+
+        <div id="voice-status" style="color: green; font-weight: bold; display: none; margin-bottom: 10px; text-align: right;">
+            <i class="fas fa-wave-square"></i> Listening... Say "Length 40", "Chest 38"...
+        </div>
+
+        <form th:action="@{/orders/saveMeasurements}" method="POST">
+            <div class="measurement-grid">
+                <div class="form-group"><label>Length</label><input type="text" name="length" id="length" th:value="${currentOrder.measurement.length}"></div>
+                <div class="form-group"><label>Chest</label><input type="text" name="chest" id="chest" th:value="${currentOrder.measurement.chest}"></div>
+                <div class="form-group"><label>Shoulder</label><input type="text" name="shoulder" id="shoulder" th:value="${currentOrder.measurement.shoulder}"></div>
+                <div class="form-group"><label>Sleeve Length</label><input type="text" name="sleeveLength" id="sleeveLength" th:value="${currentOrder.measurement.sleeveLength}"></div>
+                <div class="form-group"><label>Sleeve Width</label><input type="text" name="sleeveWidth" id="sleeveWidth" th:value="${currentOrder.measurement.sleeveWidth}"></div>
+                <div class="form-group"><label>Chest Pit</label><input type="text" name="chestPit" id="chestPit" th:value="${currentOrder.measurement.chestPit}"></div>
+                <div class="form-group"><label>Waist Pit</label><input type="text" name="waistPit" id="waistPit" th:value="${currentOrder.measurement.waistPit}"></div>
+                <div class="form-group"><label>Hip Pit</label><input type="text" name="hipPit" id="hipPit" th:value="${currentOrder.measurement.hipPit}"></div>
+                <div class="form-group"><label>Collar</label><input type="text" name="collar" id="collar" th:value="${currentOrder.measurement.collar}"></div>
+                <div class="form-group"><label>Cuff Length</label><input type="text" name="cuffLength" id="cuffLength" th:value="${currentOrder.measurement.cuffLength}"></div>
+                <div class="form-group"><label>Cuff Width</label><input type="text" name="cuffWidth" id="cuffWidth" th:value="${currentOrder.measurement.cuffWidth}"></div>
+                <div class="form-group"><label>Height</label><input type="text" name="height" id="height" th:value="${currentOrder.measurement.height}"></div>
+                <div class="form-group"><label>Hip</label><input type="text" name="hip" id="hip" th:value="${currentOrder.measurement.hip}"></div>
+                <div class="form-group"><label>Seat</label><input type="text" name="seat" id="seat" th:value="${currentOrder.measurement.seat}"></div>
+                <div class="form-group"><label>Thigh</label><input type="text" name="thigh" id="thigh" th:value="${currentOrder.measurement.thigh}"></div>
+                <div class="form-group"><label>Knee</label><input type="text" name="knee" id="knee" th:value="${currentOrder.measurement.knee}"></div>
+                <div class="form-group"><label>Bottom</label><input type="text" name="bottom" id="bottom" th:value="${currentOrder.measurement.bottom}"></div>
+                <div class="form-group"><label>In Seam</label><input type="text" name="inSeam" id="inSeam" th:value="${currentOrder.measurement.inSeam}"></div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn-primary" style="background-color: #28a745;">SAVE & GO TO STYLE DESIGN</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = function(event) {
+            // Get the latest sentence spoken
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            console.log("Heard raw: " + transcript);
+            processSpeechSmart(transcript);
+        };
+
+        recognition.onerror = function(event) {
+            console.error("Speech Error: " + event.error);
+            stopListening();
+        };
+    } else {
+        document.getElementById("micBtn").style.display = "none";
+    }
+
+    function toggleVoiceAI() {
+        if (!recognition) { alert("Browser not supported. Use Chrome."); return; }
+        isListening ? stopListening() : startListening();
+    }
+
+    function startListening() {
+        recognition.start();
+        isListening = true;
+        document.getElementById("micBtn").classList.add("mic-active");
+        document.getElementById("micBtn").innerHTML = '<i class="fas fa-stop"></i> <span>Stop Listening</span>';
+        document.getElementById("voice-status").style.display = "block";
+    }
+
+    function stopListening() {
+        recognition.stop();
+        isListening = false;
+        document.getElementById("micBtn").classList.remove("mic-active");
+        document.getElementById("micBtn").innerHTML = '<i class="fas fa-microphone"></i> <span>Start Voice Entry</span>';
+        document.getElementById("voice-status").style.display = "none";
+    }
+
+    function processSpeechSmart(text) {
+        // "Smart" Dictionary
+        // We put specific phrases FIRST (e.g., "Sleeve Length") before general ones ("Sleeve")
+        // The regex looks for the keyword followed by any number
+        const patterns = [
+            { id: "sleeveWidth",  regex: /(sleeve width|width of sleeve)\s*(\d+(\.\d+)?)/ },
+            { id: "sleeveLength", regex: /(sleeve length|length of sleeve|sleeve)\s*(\d+(\.\d+)?)/ }, // "Sleeve" defaults to length
+
+            { id: "chestPit",     regex: /(chest pit|pit to pit)\s*(\d+(\.\d+)?)/ },
+            { id: "chest",        regex: /(chest|bust)\s*(\d+(\.\d+)?)/ },
+
+            { id: "waistPit",     regex: /(waist pit|pit waist)\s*(\d+(\.\d+)?)/ },
+
+            { id: "hipPit",       regex: /(hip pit)\s*(\d+(\.\d+)?)/ },
+            { id: "hip",          regex: /(hip|hips)\s*(\d+(\.\d+)?)/ },
+
+            { id: "cuffLength",   regex: /(cuff length)\s*(\d+(\.\d+)?)/ },
+            { id: "cuffWidth",    regex: /(cuff width|cuff)\s*(\d+(\.\d+)?)/ },
+
+            { id: "inSeam",       regex: /(in seam|inseam|inner length)\s*(\d+(\.\d+)?)/ },
+            { id: "length",       regex: /(length|full length|height)\s*(\d+(\.\d+)?)/ },
+
+            { id: "shoulder",     regex: /(shoulder|shoulders)\s*(\d+(\.\d+)?)/ },
+            { id: "collar",       regex: /(collar|neck)\s*(\d+(\.\d+)?)/ },
+            { id: "bottom",       regex: /(bottom|flare)\s*(\d+(\.\d+)?)/ },
+            { id: "seat",         regex: /(seat)\s*(\d+(\.\d+)?)/ },
+            { id: "thigh",        regex: /(thigh)\s*(\d+(\.\d+)?)/ },
+            { id: "knee",         regex: /(knee)\s*(\d+(\.\d+)?)/ },
+        ];
+
+        // Loop through patterns and try to match
+        patterns.forEach(p => {
+            const match = text.match(p.regex);
+            if (match) {
+                const number = match[2]; // The number captured by regex
+                const field = document.getElementById(p.id);
+                if (field) {
+                    field.value = number;
+                    // Flash effect to show it worked
+                    field.style.backgroundColor = "#e8f5e9";
+                    field.style.border = "2px solid #28a745";
+                    setTimeout(() => {
+                        field.style.backgroundColor = "white";
+                        field.style.border = "1px solid #ddd";
+                    }, 1000);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

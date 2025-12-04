@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Order - HandySeam</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .selection-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        .selection-card {
+            background: white;
+            width: 400px;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .selection-card:hover {
+            transform: translateY(-5px);
+            border-color: #2c2440;
+        }
+        .selection-card h2 { color: #2c2440; margin-bottom: 10px; }
+        .selection-card p { color: #777; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="brand">HandySeam</div>
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="/orders/create" class="menu-item active"><i class="fas fa-plus-circle"></i> Create New Order</a>
+        <a href="/customers" class="menu-item"><i class="fas fa-users"></i> Customers</a>
+    </div>
+</nav>
+
+<header class="topbar">
+    <div class="page-title">Create Order</div>
+</header>
+
+<main class="main-content">
+    <div class="selection-container">
+        <div class="selection-card">
+            <h2>Tailoring</h2>
+            <p>Create order for a customer who wants a tailoring job</p>
+            <a href="/orders/create/tailoring/select-customer" class="btn-primary">GO</a>
+        </div>
+
+        <div class="selection-card">
+            <h2>Sales</h2>
+            <p>Create order for ready-made clothes or items</p>
+            <button class="btn-primary" style="opacity: 0.5; cursor: not-allowed;">GO</button>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

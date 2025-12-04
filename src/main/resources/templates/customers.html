@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>HandySeam - Customers</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="brand">HandySeam</div>
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="/orders/create" class="menu-item"><i class="fas fa-plus-circle"></i> Create New Order</a>
+        <a href="/orders" class="menu-item"><i class="fas fa-list"></i> View Orders</a>
+        <a href="/customers" class="menu-item active"><i class="fas fa-users"></i> Customers</a>
+    </div>
+</nav>
+
+<header class="topbar">
+    <div class="page-title">Customers Management</div>
+    <div class="user-profile"><i class="fas fa-user-circle fa-lg"></i></div>
+</header>
+
+<main class="main-content">
+    <div class="card">
+        <div class="card-header">
+            <h3>Customer List</h3>
+            <button class="btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Create New Customer</button>
+        </div>
+
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="customer : ${listCustomers}">
+                <td th:text="${customer.id}"></td>
+                <td>
+                    <a th:href="@{/customers/{id}(id=${customer.id})}"
+                       style="color: #2c2440; font-weight: bold; text-decoration: none;">
+                        <span th:text="${customer.name}"></span>
+                    </a>
+                </td>
+                <td th:text="${customer.phone}"></td>
+                <td th:text="${customer.email}"></td>
+                <td th:text="${customer.address}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div id="customerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Create Customer</h3>
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form action="#" th:action="@{/saveCustomer}" th:object="${newCustomer}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" th:field="*{name}" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" th:field="*{phone}" placeholder="Phone Number" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" th:field="*{email}" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea th:field="*{address}" rows="3" placeholder="Full Address"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Customer Photo (Optional)</label>
+                    <input type="file" name="photoFile" accept="image/*">
+                </div>
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-primary">Save Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var modal = document.getElementById("customerModal");
+    function openModal() { modal.style.display = "block"; }
+    function closeModal() { modal.style.display = "none"; }
+    window.onclick = function(event) {
+        if (event.target == modal) { modal.style.display = "none"; }
+    }
+</script>
+</body>
+</html>>

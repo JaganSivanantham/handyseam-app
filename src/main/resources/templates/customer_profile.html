@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<nav class="sidebar">
+    <div class="brand">HandySeam</div>
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="menu-item">Dashboard</a>
+        <a href="/orders/create" class="menu-item">Create New Order</a>
+        <a href="/orders" class="menu-item">View Orders</a>
+        <a href="/customers" class="menu-item active">Customers</a>
+    </div>
+</nav>
+<main class="main-content">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <h2 th:text="${customer.name}" style="margin-bottom: 5px; color: #2c2440;"></h2>
+                <p style="color: #666;" th:text="${customer.phone}"></p>
+                <p style="color: #666;" th:text="${customer.address}"></p>
+            </div>
+            <div style="background: #ffebee; padding: 20px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 12px; color: #d32f2f;">TOTAL PENDING DUE</div>
+                <div style="font-size: 24px; font-weight: bold; color: #d32f2f;" th:text="${'₹' + totalPending}"></div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Order History</h3>
+        <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Date</th><th>Status</th><th>Total</th><th>Balance</th><th>Action</th></tr></thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.trackingId}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></td>
+                <td><span th:text="${order.status}" class="status-badge" style="background:#eee;"></span></td>
+                <td th:text="${'₹' + order.totalAmount}"></td>
+
+                <td th:style="${order.getBalanceAmount() > 0 ? 'color: red; font-weight: bold;' : 'color: green;'}"
+                    th:text="${'₹' + order.getBalanceAmount()}"></td>
+
+                <td><a th:href="@{/orders/view/{id}(id=${order.id})}" class="btn-secondary">View</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Orders - HandySeam</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="brand">HandySeam</div>
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="/orders/create" class="menu-item"><i class="fas fa-plus-circle"></i> Create New Order</a>
+        <a href="/orders" class="menu-item active"><i class="fas fa-list"></i> View Orders</a>
+        <a href="/customers" class="menu-item"><i class="fas fa-users"></i> Customers</a>
+    </div>
+</nav>
+
+<header class="topbar">
+    <div class="page-title">Orders List</div>
+</header>
+
+<main class="main-content">
+    <div class="card">
+        <div class="card-header">
+            <h3>All Orders</h3>
+        </div>
+
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${listOrders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.customer.name}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></td>
+                <td>
+                            <span th:text="${order.status}"
+                                  style="padding: 5px 10px; border-radius: 4px; background-color: #eee; font-size: 12px;">
+                            </span>
+                </td>
+                <td th:text="${'₹' + order.totalAmount}"></td>
+                <td>
+                    <a th:href="@{/orders/view/{id}(id=${order.id})}" class="btn-primary" style="padding: 5px 10px; font-size: 12px;">VIEW</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
