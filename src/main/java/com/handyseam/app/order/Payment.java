@@ -15,7 +15,7 @@ public class Payment {
     private ShopOrder order;
 
     private Double amount;
-    private String paymentMode; // "Cash" or "Online"
+    private String paymentMode; 
     private LocalDateTime paymentDate;
 
     @PrePersist
