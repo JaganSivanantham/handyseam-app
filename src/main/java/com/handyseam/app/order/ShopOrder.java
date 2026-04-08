@@ -34,7 +34,7 @@ public class ShopOrder {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Measurement measurement;
 
-    // --- NEW HELPER METHODS FOR BALANCE ---
+   
 
     public Double getPaidAmount() {
         if (payments == null || payments.isEmpty()) return 0.0;
