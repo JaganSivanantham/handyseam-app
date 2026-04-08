@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ShopOrderRepository extends JpaRepository<ShopOrder, Long> {
 
-    // Existing methods...
+   
     List<ShopOrder> findTop5ByOrderByOrderDateDesc();
 
     @Query("SELECT COUNT(o) FROM ShopOrder o WHERE o.status <> 'Delivered'")
@@ -18,6 +18,6 @@ public interface ShopOrderRepository extends JpaRepository<ShopOrder, Long> {
     @Query("SELECT SUM(o.totalAmount) FROM ShopOrder o")
     Double sumTotalRevenue();
 
-    // --- NEW METHOD ---
+   
     List<ShopOrder> findByCustomer(Customer customer);
 }
