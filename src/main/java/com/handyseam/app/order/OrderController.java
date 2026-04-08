@@ -21,7 +21,7 @@ public class OrderController {
     @Autowired
     private ShopOrderRepository shopOrderRepository; // Add this to fetch orders
 
-    // --- 1. THIS FIXES THE WHITELABEL ERROR ON VIEW ORDERS ---
+   
     @GetMapping("")
     public String viewAllOrders(Model model) {
         model.addAttribute("listOrders", shopOrderRepository.findAll());
@@ -33,7 +33,7 @@ public class OrderController {
         return "order_type_select";
     }
 
-    // --- 2. THIS FIXES SEARCH ON THE SELECT CUSTOMER PAGE ---
+    
     @GetMapping("/create/tailoring/select-customer")
     public String selectCustomerForOrder(Model model, @RequestParam(value = "keyword", required = false) String keyword) {
         List<Customer> list;
