@@ -22,12 +22,12 @@ public class OrderItem {
     private Integer quantity;
     private String instruction;
 
-    // --- CHANGED: Store image directly in DB ---
+   
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] imageData;
 
-    // Helper to check if image exists (for HTML)
+   
     public boolean hasImage() {
         return imageData != null && imageData.length > 0;
     }
