@@ -14,7 +14,6 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    // New method for search
     public List<Customer> searchCustomers(String keyword) {
         if (keyword != null && !keyword.isEmpty()) {
             return customerRepository.findByNameContainingOrPhoneContaining(keyword, keyword);
