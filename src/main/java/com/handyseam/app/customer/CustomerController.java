@@ -23,9 +23,9 @@ public class CustomerController {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ShopOrderRepository orderRepository; // Required for Customer Profile history
+    private ShopOrderRepository orderRepository; 
 
-    // 1. VIEW CUSTOMER LIST
+    
     @GetMapping("/customers")
     public String viewCustomersPage(Model model, @RequestParam(value = "keyword", required = false) String keyword) {
         List<Customer> list;
@@ -40,12 +40,12 @@ public class CustomerController {
         return "customers";
     }
 
-    // 2. SAVE CUSTOMER (Includes Photo Upload Logic)
+   
     @PostMapping("/saveCustomer")
     public String saveCustomer(@ModelAttribute("newCustomer") Customer customer,
                                @RequestParam("photoFile") MultipartFile photoFile) throws IOException {
 
-        // Convert file to bytes and save to object
+       
         if (!photoFile.isEmpty()) {
             customer.setPhoto(photoFile.getBytes());
         }
@@ -54,7 +54,7 @@ public class CustomerController {
         return "redirect:/customers";
     }
 
-    // 3. GET CUSTOMER PHOTO (Used by HTML <img> tags)
+    
     @GetMapping("/customer/photo/{id}")
     @ResponseBody
     public ResponseEntity<byte[]> getCustomerPhoto(@PathVariable Long id) {
@@ -65,15 +65,15 @@ public class CustomerController {
         return ResponseEntity.notFound().build();
     }
 
-    // 4. VIEW CUSTOMER PROFILE (Restored from previous step)
+   
     @GetMapping("/customers/{id}")
     public String viewCustomerProfile(@PathVariable Long id, Model model) {
         Customer c = customerRepository.findById(id).orElseThrow();
 
-        // Fetch order history
+        
         List<ShopOrder> orders = orderRepository.findByCustomer(c);
 
-        // Calculate Total Pending across all orders
+       
         double totalPending = 0.0;
         for(ShopOrder o : orders) {
             totalPending += o.getBalanceAmount();
