@@ -43,7 +43,7 @@ public class OrderFlowController {
     @Autowired private OrderItemRepository orderItemRepository;
     @Autowired private PaymentRepository paymentRepository;
 
-    // STEP 1: Create Order & Show Measurements
+   
     @GetMapping("/create/tailoring/details")
     public String showMeasurementStep(@RequestParam Long customerId, Model model) {
         Customer customer = customerRepository.findById(customerId).orElseThrow();
@@ -57,7 +57,7 @@ public class OrderFlowController {
         Measurement m = new Measurement();
         m.setOrder(order);
 
-        // Auto-fill logic
+       
         List<Measurement> history = measurementRepository.findLatestByCustomer(customerId);
         if (!history.isEmpty()) {
             Measurement last = history.get(0);
@@ -90,55 +90,53 @@ public class OrderFlowController {
         return "redirect:/orders/create/outfits";
     }
 
-    // STEP 2: Show Outfits
+   
     @GetMapping("/create/outfits")
     public String showAddOutfitsStep(@ModelAttribute("currentOrder") ShopOrder order, Model model) {
         model.addAttribute("newItem", new OrderItem());
         return "order_step3_outfits";
     }
 
-    // --- REPLACED: ADD OUTFIT (With Camera Logic) ---
-    // You need these imports at the top
+    
 
 
-    // --- ROBUST ADD OUTFIT (With Windows Fixes) ---
+
+   
     @PostMapping("/addOutfit")
     public String addOutfit(@ModelAttribute("currentOrder") ShopOrder order,
                             @ModelAttribute OrderItem newItem,
                             @RequestParam("cameraImage") String cameraImage,
-                            @RequestParam("styleSelect") String styleSelect, // Dropdown Value
-                            @RequestParam("otherStyle") String otherStyle,   // Textbox Value
-                            @RequestParam(value = "aiMode", defaultValue = "false") boolean aiMode) { // AI Flag
+                            @RequestParam("styleSelect") String styleSelect, 
+                            @RequestParam("otherStyle") String otherStyle,   
+                            @RequestParam(value = "aiMode", defaultValue = "false") boolean aiMode) { 
 
         newItem.setOrder(order);
         if(newItem.getQuantity() == null || newItem.getQuantity() < 1) newItem.setQuantity(1);
 
-        // 1. HANDLE STYLE LOGIC
+    
         if ("Others".equals(styleSelect)) {
             newItem.setStyleName(otherStyle); // Use the text input
         } else {
             newItem.setStyleName(styleSelect); // Use the dropdown
         }
 
-        // 2. HANDLE IMAGE LOGIC
         if (cameraImage != null && !cameraImage.isEmpty()) {
             try {
                 String cleanBase64 = cameraImage.split(",")[1];
                 byte[] fabricBytes = Base64.getDecoder().decode(cleanBase64);
 
-                // IF AI MODE IS ON -> RUN PYTHON
+            
                 if (aiMode) {
                     String projectDir = System.getProperty("user.dir");
                     Path fabricPath = Paths.get(projectDir, "temp_fabric.jpg");
                     Path resultPath = Paths.get(projectDir, "temp_result.jpg");
 
-                    // Note: Ensure this path is correct based on your previous debugging
+                  
                     Path outlinePath = Paths.get(projectDir, "src", "main", "resources", "static", "images", "shirt_outline.jpg");
                     String scriptPath = projectDir + "/src/main/resources/python/virtual_tryon.py";
 
                     Files.write(fabricPath, fabricBytes);
 
-                    // OS Detection for Python Command
                     String pythonCmd = System.getProperty("os.name").toLowerCase().contains("win") ? "python" : "python3";
 
                     ProcessBuilder pb = new ProcessBuilder(
@@ -154,14 +152,14 @@ public class OrderFlowController {
                     if (Files.exists(resultPath)) {
                         newItem.setImageData(Files.readAllBytes(resultPath));
                     } else {
-                        // Fallback if AI fails
+               
                         newItem.setImageData(fabricBytes);
                     }
                     Files.deleteIfExists(fabricPath);
                     Files.deleteIfExists(resultPath);
 
                 } else {
-                    // NORMAL MODE -> JUST SAVE RAW BYTES
+                 
                     newItem.setImageData(fabricBytes);
                 }
 
@@ -177,13 +175,13 @@ public class OrderFlowController {
         return "redirect:/orders/create/outfits";
     }
 
-    // STEP 3: Invoice
+ 
     @GetMapping("/create/invoice")
     public String showInvoiceStep(@ModelAttribute("currentOrder") ShopOrder order) {
         return "order_step4_invoice";
     }
 
-    // FINAL STEP: Confirm & Save to DB
+
     @PostMapping("/confirmOrder")
     public String confirmOrder(@ModelAttribute("currentOrder") ShopOrder order,
                                @RequestParam String expectedDate,
@@ -246,7 +244,7 @@ public class OrderFlowController {
         return "redirect:/orders";
     }
 
-    // --- ADDED: DISPLAY IMAGE FROM DB ---
+
     @GetMapping("/image/{itemId}")
     @ResponseBody
     public ResponseEntity<byte[]> getImage(@PathVariable Long itemId) {
